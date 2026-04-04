@@ -214,7 +214,20 @@ After running `seed.py`, the following accounts are available:
 | GET    | `/dashboard/trends`           | Monthly income vs expense        | Analyst + Admin |
 | GET    | `/dashboard/recent`           | Last N transactions              | All             |
 
+## API Testing
 
+All endpoints have been manually tested using Bruno collections.
+
+The requests cover:
+- Authentication flows (register, login, token usage)
+- Role-based access control (viewer, analyst, admin)
+- CRUD operations on financial records
+- Filtering and pagination
+- Dashboard endpoints
+
+The Bruno collection is available in the `/bruno` folder for reproducibility.
+
+Note: Automated testing was not included as it was outside the scope of the assignment, but the current structure allows easy integration of pytest-based tests.
 
 ## Rate Limits
 
