@@ -130,10 +130,9 @@ Once running, interactive API docs are available at:
 
 ```env
 # .env.example
-DATABASE_URL=sqlite:///./finance.db
-SECRET_KEY=your-secret-key-change-in-production
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+secret_key=super-secret-key
+database_url=sqlite:///your.db
+access_token_expires_in=30
 ```
 
 
