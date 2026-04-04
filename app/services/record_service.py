@@ -68,5 +68,5 @@ def delete_record(session: Session, record_id:int)-> None:
     record = get_record_by_id(session, record_id)
     record.is_deleted = True
     record.updated_at=datetime.utcnow()
-    session.delete(record)
+    session.add(record)
     session.commit()
