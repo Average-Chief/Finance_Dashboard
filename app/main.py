@@ -1,8 +1,10 @@
-from app.db import init_db
+from app.db import init_db, engine
 from app.core.exceptions import register_handlers
 from app.core.rate_limit import register_rate_limiter
+from app.core.bootstrap import create_initial_admin
 from app.routes import records, dashboard, auth, users
 from fastapi import FastAPI
+from sqlmodel import Session
 
 #fastapi app setup
 app = FastAPI(
@@ -13,10 +15,14 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-#initiate db to create tables
+#initiate db to create tables and an admin account
 @app.on_event("startup")
 def on_startup():
     init_db()
+
+    with Session(engine) as session:
+        create_initial_admin(session)
+
 
 #register exception and limit handlers
 register_handlers(app)
