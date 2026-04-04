@@ -21,37 +21,52 @@ A backend system for finance data processing with role-based access control, bui
 ## Project Structure
 
 ```
-finance-backend/
-├── seed.py                  # Populates DB with test users and sample records
-└── app/
-    ├── core/
-    │   ├── auth.py          # JWT creation, password hashing, auth dependency
-    │   ├── rbac.py          # RoleChecker, injectable RBAC dependency
-    │   ├── exception.py     # Custom exception classes
-    │   └── rate_limit.py    # slowapi limiter instance and limit presets
-    ├── models/
-    │   ├── user.py          # User table + Role enum
-    │   └── record.py        # FinancialRecord table + RecordType enum
-    ├── routes/
-    │   ├── auth.py          # POST /auth/register, /auth/login, GET /auth/me
-    │   ├── users.py         # GET/PATCH /users/ (admin only)
-    │   ├── records.py       # Full CRUD + filters for /records/
-    │   └── dashboard.py     # GET /dashboard/summary|trends|category-breakdown|recent
-    ├── schemas/
-    │   ├── user.py          # UserCreate, UserRead, RoleUpdate, StatusUpdate
-    │   ├── record.py        # RecordCreate, RecordRead, RecordUpdate
-    │   └── dashboard.py     # SummaryRead, TrendRead, CategoryBreakdownRead
-    ├── services/
-    │   ├── user_service.py      # User CRUD and role/status logic
-    │   ├── record_service.py    # Record CRUD, filters, soft delete
-    │   └── dashboard_service.py # SQL aggregations for analytics
-    ├── __init__.py
-    ├── config.py        # Pydantic settings, loads from .env
-    ├── db.py            # SQLite engine, get_session dependency
-    ├── main.py          # App factory, router registration, rate limiter, error handlers
-    ├── .env.example
-    ├── requirements.txt
-    └── README.md
+finance-backend/                    # Root project directory
+├── app/                            # Core backend application (business logic + API)
+│   ├── core/                       # Cross-cutting concerns (auth, RBAC, exceptions, rate limiting)
+│   │   ├── auth.py
+│   │   ├── rbac.py
+│   │   ├── exception.py
+│   │   └── rate_limit.py
+│   │
+│   ├── models/                     # Database models (SQLModel ORM classes)
+│   │   ├── user.py
+│   │   └── record.py
+│   │
+│   ├── routes/                     # API endpoints (request/response layer)
+│   │   ├── auth.py
+│   │   ├── users.py
+│   │   ├── records.py
+│   │   └── dashboard.py
+│   │
+│   ├── schemas/                    # Pydantic schemas (validation + serialization)
+│   │   ├── user.py
+│   │   ├── record.py
+│   │   └── dashboard.py
+│   │
+│   ├── services/                   # Business logic + DB queries (no HTTP logic)
+│   │   ├── user_service.py
+│   │   ├── record_service.py
+│   │   └── dashboard_service.py
+│   │
+│   ├── __init__.py
+│   ├── config.py                   # Environment config (loads from .env)
+│   ├── db.py                       # Database engine + session dependency
+│   └── main.py                     # FastAPI app entrypoint + router registration
+│
+├── bruno/                          # API testing collections (manual testing using Bruno)
+│   ├── auth/                       # Auth flow tests (register, login, token usage)
+│   ├── users/                      # Admin user management endpoints
+│   ├── records/                    # CRUD + filters for financial records
+│   ├── dashboard/                  # Analytics endpoints (summary, trends, breakdown)
+│   └── environments/               # Environment configs (local/dev variables)
+│
+├── seed.py                         # Script to populate DB with sample users and records
+├── requirements.txt                # Python dependencies (pinned versions)
+├── README.md                       # Project documentation and setup guide
+├── .env.example                    # Sample environment variables
+├── .gitignore                      # Files/folders ignored by Git
+└── finance.db                      # SQLite database file (ignored in Git)
 ```
 
 
