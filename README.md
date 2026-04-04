@@ -117,24 +117,26 @@ finance-backend/                    # Root project directory
 
 ```bash
 # 1. Clone and enter project
-git clone <repo-url>
-cd finance-backend/app
+git clone https://github.com/Average-Chief/Finance_Dashboard.git
+cd Finance_Dashboard
 
 # 2. Create and activate virtual environment
-python -m venv venv
-venv\Scripts\activate     
+python -m venv .venv
+
+# Windows (PowerShell)
+.\.venv\Scripts\Activate.ps1
 
 # 3. Install dependencies
 pip install -r requirements.txt
 
 # 4. Copy environment file
-cp .env.example .env
+copy .env.example .env
 
 # 5. Seed database with test data
 python seed.py
 
 # 6. Start server
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
 
 Once running, interactive API docs are available at:
