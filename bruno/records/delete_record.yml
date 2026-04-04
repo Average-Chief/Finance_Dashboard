@@ -1,0 +1,17 @@
+info:
+  name: delete_record
+  type: http
+  seq: 22
+
+http:
+  method: DELETE
+  url: http://127.0.0.1:8000/records/1
+  auth:
+    type: bearer
+    token: "{{Bearer}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

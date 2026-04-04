@@ -1,0 +1,23 @@
+info:
+  name: change_status
+  type: http
+  seq: 12
+
+http:
+  method: PATCH
+  url: http://127.0.0.1:8000/users/1/status
+  body:
+    type: json
+    data: |-
+      {
+        "is_active": false
+      }
+  auth:
+    type: bearer
+    token: "{{Bearer}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

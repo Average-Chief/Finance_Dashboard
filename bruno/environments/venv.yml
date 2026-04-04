@@ -1,0 +1,4 @@
+name: venv
+variables:
+  - secret: true
+    name: Bearer

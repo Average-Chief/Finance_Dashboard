@@ -1,0 +1,28 @@
+info:
+  name: modify_records
+  type: http
+  seq: 20
+
+http:
+  method: PUT
+  url: http://127.0.0.1:8000/records/1
+  body:
+    type: json
+    data: |-
+      {
+        "amount": 15000,
+        "type": "income",
+        "category": "Salary",
+        "currency": "INR",
+        "date": "2026-01-01",
+        "description": "January Salary + Bonus"
+      }
+  auth:
+    type: bearer
+    token: "{{Bearer}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

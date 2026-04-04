@@ -1,0 +1,28 @@
+info:
+  name: new_record
+  type: http
+  seq: 14
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/records/
+  body:
+    type: json
+    data: |-
+      {
+        "amount": 1000,
+        "type": "income",
+        "category": "Trade",
+        "currency": "INR",
+        "date": "2026-04-22",
+        "description": "Trading Profit"
+      }
+  auth:
+    type: bearer
+    token: "{{Bearer}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
