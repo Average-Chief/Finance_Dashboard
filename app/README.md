@@ -1,0 +1,232 @@
+# Finance Dashboard API
+
+A backend system for finance data processing with role-based access control, built as a clean and well-reasoned assessment submission.
+
+> The goal of this implementation was to balance simplicity with real-world backend practices rather than over-engineering the solution.
+
+
+## Tech Stack
+
+| Layer        | Tool                        |
+|--------------|-----------------------------|
+| Framework    | FastAPI                     |
+| ORM          | SQLModel (SQLAlchemy core)  |
+| Database     | SQLite                      |
+| Auth         | JWT (python-jose + bcrypt)  |
+| Validation   | Pydantic v2                 |
+| Rate Limiting| slowapi                     |
+| API Docs     | Swagger (auto-generated)    |
+
+
+## Project Structure
+
+```
+finance-backend/
+├── seed.py                  # Populates DB with test users and sample records
+└── app/
+    ├── core/
+    │   ├── auth.py          # JWT creation, password hashing, auth dependency
+    │   ├── rbac.py          # RoleChecker, injectable RBAC dependency
+    │   ├── exception.py     # Custom exception classes
+    │   └── rate_limit.py    # slowapi limiter instance and limit presets
+    ├── models/
+    │   ├── user.py          # User table + Role enum
+    │   └── record.py        # FinancialRecord table + RecordType enum
+    ├── routes/
+    │   ├── auth.py          # POST /auth/register, /auth/login, GET /auth/me
+    │   ├── users.py         # GET/PATCH /users/ (admin only)
+    │   ├── records.py       # Full CRUD + filters for /records/
+    │   └── dashboard.py     # GET /dashboard/summary|trends|category-breakdown|recent
+    ├── schemas/
+    │   ├── user.py          # UserCreate, UserRead, RoleUpdate, StatusUpdate
+    │   ├── record.py        # RecordCreate, RecordRead, RecordUpdate
+    │   └── dashboard.py     # SummaryRead, TrendRead, CategoryBreakdownRead
+    ├── services/
+    │   ├── user_service.py      # User CRUD and role/status logic
+    │   ├── record_service.py    # Record CRUD, filters, soft delete
+    │   └── dashboard_service.py # SQL aggregations for analytics
+    ├── __init__.py
+    ├── config.py        # Pydantic settings, loads from .env
+    ├── db.py            # SQLite engine, get_session dependency
+    ├── main.py          # App factory, router registration, rate limiter, error handlers
+    ├── .env.example
+    ├── requirements.txt
+    └── README.md
+```
+
+
+## Architecture Decisions
+
+**1. SQLite** — Zero configuration. Schema and raw queries are fully visible and inspectable. Swap `DATABASE_URL` to PostgreSQL for production with no code changes needed.
+
+**2. SQLModel** — Combines SQLAlchemy table definitions and Pydantic validation in a single class. Eliminates duplicate model definitions.
+
+**3. Separation of concerns** — Routes handle HTTP request/response only. Services contain all business logic and DB queries. Models define schema. No business logic leaks into route handlers.
+
+**4. RBAC via dependency injection** — `RoleChecker` is a callable class injected as a FastAPI dependency. No decorators, no scattered if-checks — clean, reusable, and testable.
+
+**5. SQL-level aggregation** — Dashboard summary and category breakdown use `func.sum`, `func.count`, and `GROUP BY` at the database level instead of Python loops. Signals database awareness and scales better.
+
+**6. Soft delete** — Financial records are marked `is_deleted=True` instead of being permanently removed. Preserves audit history and allows recovery — standard practice in finance systems.
+
+**7. Currency field** — Each record carries a `currency` code (default: INR). Small addition that makes the data model realistic for a finance system.
+
+**8. Simple JWT** — Single access token with configurable expiry. No refresh token complexity — sufficient for assessment scope.
+
+**9. Timestamps** — `updated_at` is manually set in service functions during updates and soft deletes rather than using ORM-level event hooks. Keeps logic explicit and visible during code review. In production, SQLAlchemy `@event.listens_for` or database-level triggers would automate this.
+
+**10. Rate limiting** — Endpoint-specific rate limits implemented with slowapi. In-memory storage used for assessment; would be swapped to Redis in production.
+
+
+## Role Permissions Matrix
+
+| Action                        | Viewer | Analyst | Admin |
+|-------------------------------|--------|---------|-------|
+| View own profile              | ✅     | ✅      | ✅    |
+| View financial records        | ✅     | ✅      | ✅    |
+| View dashboard summary        | ✅     | ✅      | ✅    |
+| View recent activity          | ✅     | ✅      | ✅    |
+| View category breakdown       | ❌     | ✅      | ✅    |
+| View monthly trends           | ❌     | ✅      | ✅    |
+| Create / update / delete records | ❌  | ❌      | ✅    |
+| Manage users (role / status)  | ❌     | ❌      | ✅    |
+
+
+
+## Setup & Run
+
+### Prerequisites
+- Python 3.10+
+
+### Steps
+
+```bash
+# 1. Clone and enter project
+git clone <repo-url>
+cd finance-backend/app
+
+# 2. Create and activate virtual environment
+python -m venv venv
+venv\Scripts\activate     
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Copy environment file
+cp .env.example .env
+
+# 5. Seed database with test data
+python seed.py
+
+# 6. Start server
+uvicorn main:app --reload
+```
+
+Once running, interactive API docs are available at:
+**`http://localhost:8000/docs`**
+
+
+## Environment Variables
+
+```env
+# .env.example
+DATABASE_URL=sqlite:///./finance.db
+SECRET_KEY=your-secret-key-change-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+
+## Test Credentials
+
+After running `seed.py`, the following accounts are available:
+
+| Role    | Email                   | Password    |
+|---------|-------------------------|-------------|
+| Admin   | admin@finance.com       | admin123    |
+| Analyst | analyst@finance.com     | analyst123  |
+| Viewer  | viewer@finance.com      | viewer123   |
+
+
+
+## API Reference
+
+### Authentication
+
+| Method | Endpoint         | Description              | Access |
+|--------|------------------|--------------------------|--------|
+| POST   | `/auth/register` | Register new user        | Public |
+| POST   | `/auth/login`    | Login → JWT token        | Public |
+| GET    | `/auth/me`       | Current user profile     | Any    |
+
+### User Management
+
+| Method | Endpoint               | Description           | Access |
+|--------|------------------------|-----------------------|--------|
+| GET    | `/users/`              | List all users        | Admin  |
+| GET    | `/users/{id}`          | Get user by ID        | Admin  |
+| PATCH  | `/users/{id}/role`     | Change user role      | Admin  |
+| PATCH  | `/users/{id}/status`   | Activate / deactivate | Admin  |
+
+### Financial Records
+
+| Method | Endpoint         | Description                      | Access |
+|--------|------------------|----------------------------------|--------|
+| POST   | `/records/`      | Create record                    | Admin  |
+| GET    | `/records/`      | List with filters + pagination   | All    |
+| GET    | `/records/{id}`  | Get single record                | All    |
+| PUT    | `/records/{id}`  | Update record                    | Admin  |
+| DELETE | `/records/{id}`  | Soft delete record               | Admin  |
+
+**Query filters on `GET /records/`:**
+
+| Param        | Type   | Description              |
+|--------------|--------|--------------------------|
+| `type`       | string | `income` or `expense`    |
+| `category`   | string | Category name            |
+| `start_date` | date   | From date (YYYY-MM-DD)   |
+| `end_date`   | date   | To date (YYYY-MM-DD)     |
+| `skip`       | int    | Pagination offset        |
+| `limit`      | int    | Records per page (1–100) |
+
+### Dashboard & Analytics
+
+| Method | Endpoint                      | Description                      | Access          |
+|--------|-------------------------------|----------------------------------|-----------------|
+| GET    | `/dashboard/summary`          | Total income / expense / balance | All             |
+| GET    | `/dashboard/category-breakdown` | Totals by category + type      | Analyst + Admin |
+| GET    | `/dashboard/trends`           | Monthly income vs expense        | Analyst + Admin |
+| GET    | `/dashboard/recent`           | Last N transactions              | All             |
+
+
+
+## Rate Limits
+
+| Scope              | Limit       | Reason                               |
+|--------------------|-------------|--------------------------------------|
+| Auth endpoints     | 5 / minute  | Prevent brute-force login attempts   |
+| Standard endpoints | 60 / minute | Normal usage ceiling                 |
+| Dashboard endpoints| 30 / minute | Aggregation queries are heavier      |
+| Admin write operations | 20 / minute | Controlled mutation rate        |
+
+
+
+## Assumptions
+
+1. **Default role is viewer** — new users register as viewers. Only an admin can promote roles.
+2. **Records are global** — all authorized users see the same set of records. Not scoped per user.
+3. **Category is free-text** — no predefined list. Indexed for query performance.
+4. **Soft delete is final via API** — `DELETE` marks `is_deleted=True`. No restore endpoint is exposed (recoverable at DB level by an admin).
+5. **Currency defaults to INR** — configurable per record. No cross-currency conversion logic.
+6. **Single access token** — 30-minute expiry, configurable via `.env`. No refresh token flow.
+7. **No email verification** — registration is immediate. Suitable for internal or assessment use.
+8. **Trend data is calendar-month grouped** — monthly trends aggregate by `YYYY-MM`. Weekly trends were not implemented.
+
+
+## Tradeoffs Considered
+
+- **SQLite over PostgreSQL** — simpler setup for assessment, trivially swappable via `DATABASE_URL`.
+- **No refresh tokens** — keeps auth logic simple and readable. A production system would add them.
+- **Manual `updated_at`** — explicit over magical. ORM event hooks would be cleaner in production.
+- **In-memory rate limiting** — resets on server restart. Redis would persist limits across instances.
+- **No soft-delete restore endpoint** — intentional scope reduction. The data is safe at DB level.
