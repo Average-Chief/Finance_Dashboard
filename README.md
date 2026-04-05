@@ -1,4 +1,12 @@
 # Finance Dashboard API
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54">
+  <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi">
+  <img src="https://img.shields.io/badge/RESTful-API-blue?style=for-the-badge">
+  <img src="https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white">
+  <img src="https://img.shields.io/badge/SQLModel-ORM-green?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Render-%46E3B7.svg?style=for-the-badge&logo=render&logoColor=white">
+</p>
 
 A backend system for finance data processing with role-based access control, built as a clean and well-reasoned assessment submission.
 
