@@ -9,8 +9,8 @@ def create_initial_admin(session: Session):
         return
 
     admin = User(
-        email="admin@finance.com",
-        name="Admin",
+        email="admin@firm.com",
+        name="Ezio Auditore",
         hashed_password=hash_password("admin123"),
         role=Role.admin,
         is_active=True

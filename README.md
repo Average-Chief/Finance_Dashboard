@@ -160,15 +160,15 @@ After running `seed.py`, the following accounts are available:
 
 | Role    | Email                   | Password    |
 |---------|-------------------------|-------------|
-| Admin   | admin@finance.com       | admin123    |
-| Analyst | analyst@finance.com     | analyst123  |
-| Viewer  | viewer@finance.com      | viewer123   |
+| Admin   | admin@firm.com       | admin123    |
+| Analyst | analyst@firm.com     | analyst123  |
+| Viewer  | viewer@firm.com      | viewer123   |
 
 If no users exist (ex: on first deploy), a default admin user is automatically created:
 
 | Role  | Email              | Password  |
 |-------|--------------------|-----------|
-| Admin | admin@finance.com  | admin123  |
+| Admin | admin@firm.com  | admin123  |
 
 ## Live API
 

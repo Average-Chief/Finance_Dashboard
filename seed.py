@@ -13,19 +13,19 @@ def seed():
 
         #users
         admin = User(
-            email="admin@finance.com",
+            email="admin@firm.com",
             name="John Price",
             hashed_password=hash_password("admin123"),
             role=Role.admin,
         )
         analyst = User(
-            email="analyst@finance.com",
+            email="analyst@firm.com",
             name="Haytham Kenway",
             hashed_password=hash_password("analyst123"),
             role=Role.analyst,
         )
         viewer = User(
-            email="viewer@finance.com",
+            email="viewer@firm.com",
             name="Leon Kennedy",
             hashed_password=hash_password("viewer123"),
             role=Role.viewer,
