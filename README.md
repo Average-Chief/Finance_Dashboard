@@ -272,5 +272,5 @@ Note: Automated testing was not included as it was outside the scope of the assi
 - **SQLite over PostgreSQL** — simpler setup for assessment, trivially swappable via `DATABASE_URL`.
 - **No refresh tokens** — keeps auth logic simple and readable. A production system would add them.
 - **Manual `updated_at`** — explicit over magical. ORM event hooks would be cleaner in production.
-- **In-memory rate limiting** — resets on server restart. Redis would persist limits across instances.
+- **In-memory rate limiting** — resets on server restart. Redis or Valky would persist limits across instances.
 - **No soft-delete restore endpoint** — intentional scope reduction. The data is safe at DB level.
