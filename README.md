@@ -163,7 +163,21 @@ After running `seed.py`, the following accounts are available:
 | Analyst | analyst@finance.com     | analyst123  |
 | Viewer  | viewer@finance.com      | viewer123   |
 
+If no users exist (ex: on first deploy), a default admin user is automatically created:
 
+| Role  | Email              | Password  |
+|-------|--------------------|-----------|
+| Admin | admin@finance.com  | admin123  |
+
+## Live API
+
+Deployed API (Render):
+https://finance-dashboard-z76y.onrender.com
+
+For API Docs:
+https://finance-dashboard-z76y.onrender.com/docs
+
+Note: The service runs on Render free tier, so the first request may take a few seconds due to cold start.
 
 ## API Reference
 
