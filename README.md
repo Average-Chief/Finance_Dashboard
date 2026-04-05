@@ -27,7 +27,8 @@ finance-backend/                    # Root project directory
 │   │   ├── auth.py
 │   │   ├── rbac.py
 │   │   ├── exception.py
-│   │   └── rate_limit.py
+│   │   ├── rate_limit.py
+│   │   └── bootstrap.py
 │   │
 │   ├── models/                     # Database models (SQLModel ORM classes)
 │   │   ├── user.py
